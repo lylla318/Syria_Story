@@ -1,0 +1,115 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<!-- load D3js 
+<script src="//d3plus.org/js/d3.js"></script> -->
+<script src="javascript/d3.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- load topojson library 
+<script src="//d3plus.org/js/topojson.js"></script> -->
+<script src="javascript/topojson.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- load D3plus after D3js 
+  <script src="//d3plus.org/js/d3plus.js"></script> -->
+
+  <script src="javascript/d3plus.js" type="text/javascript" charset="utf-8"></script> 
+
+
+<!-- <script src="datamaps.world.min.js"></script> -->
+
+<!-- create container element for visualization -->
+<div id="viz"></div>
+
+<script>
+  // sample data array
+  var sample_data = [
+   // {"Co-authorships": 6480, "country":"nausa", "name": "United States"},
+   {"Co-authorships": 440, "country": "eudeu", "name": "Germany"},
+   {"Co-authorships": 325, "country": "aschn", "name": "China"},
+   {"Co-authorships": 291, "country": "eugbr", "name": "United Kingdom"}, 
+   {"Co-authorships": 224, "country": "eufra", "name": "France"}, 
+   {"Co-authorships": 216, "country": "askor", "name": "South Korea"},
+   {"Co-authorships": 145, "country": "astwn", "name": "Taiwan"  },
+   {"Co-authorships": 139, "country": "euita", "name": "Italy" },
+   {"Co-authorships": 134, "country": "asjpn", "name": "Japan" },
+   {"Co-authorships": 126, "country": "nacan", "name": "Canada"  },
+   {"Co-authorships": 123, "country": "euche", "name": "Switzerland" },
+   {"Co-authorships": 120, "country": "ocaus", "name": "Australia" },
+   {"Co-authorships": 114, "country": "eunld", "name": "Netherlands" },
+   {"Co-authorships": 89, "country": "aschl", "name": "Chile" },
+   {"Co-authorships": 75, "country": "eugrc", "name": "Greece"  },
+   {"Co-authorships": 75, "country": "euesp", "name": "Spain" },
+   {"Co-authorships": 74, "country": "asrus", "name": "Russia"  },
+   {"Co-authorships": 73, "country": "assgp", "name": "Singapore" },
+   {"Co-authorships": 70, "country": "eudnk", "name": "Denmark" },
+   {"Co-authorships": 62, "country": "asisr", "name": "Israel"  },
+   {"Co-authorships": 61, "country": "eucze", "name": "Czech Republic"  },
+   {"Co-authorships": 49, "country": "saarg", "name": "Argentina" },
+   {"Co-authorships": 48, "country": "asind", "name": "India" },
+   {"Co-authorships": 46, "country": "assau", "name": "Saudi Arabia"  },
+   {"Co-authorships": 41, "country": "sabra", "name": "Brazil"  },
+   {"Co-authorships": 38, "country": "eunor", "name": "Norway"  },
+   {"Co-authorships": 32, "country": "eubel", "name": "Belgium" },
+   {"Co-authorships": 24, "country": "saper", "name": "Peru"  },
+   {"Co-authorships": 22, "country": "eusvn", "name": "Slovenia"},
+   {"Co-authorships": 21, "country": "ocnzl", "name": "New Zealand" },
+   {"Co-authorships": 18, "country": "euswe", "name": "Sweden"  },
+   {"Co-authorships": 18, "country": "astur", "name": "Turkey"  },
+   {"Co-authorships": 16, "country": "euaut", "name": "Austria" },
+   {"Co-authorships": 15, "country": "eufin", "name": "Finland" },
+   {"Co-authorships": 12, "country": "samex", "name": "Mexico" },
+   {"Co-authorships": 12, "country": "astha", "name": "Thailand"  },
+   {"Co-authorships": 9,  "country": "asmys", "name": "Malaysia"  },
+   {"Co-authorships": 7,  "country": "eubol", "name": "Bolivia" },
+   {"Co-authorships": 7,  "country": "sacol", "name": "Colombia"  },
+   {"Co-authorships": 6,  "country": "afuga", "name": "Uganda" },
+   {"Co-authorships": 5,  "country": "euisl", "name": "Iceland" },
+   {"Co-authorships": 5,  "country": "napan", "name": "Panama" },
+   {"Co-authorships": 5,  "country": "euprt", "name": "Portugal"  },
+   {"Co-authorships": 5,  "country": "afzaf", "name": "South Africa"},
+   {"Co-authorships": 4,  "country": "nacri", "name": "Costa rica"},
+   {"Co-authorships": 4, "country": "afeth", "name": "Ethiopia"},
+   {"Co-authorships": 4, "country": "euirl", "name": "Ireland"},
+   {"Co-authorships": 4, "country": "eultu", "name": "Lithuania"},
+   {"Co-authorships": 4, "country": "asqat", "name": "Qatar"},
+   {"Co-authorships": 4, "country": "saven", "name": "Venezuela"},
+   {"Co-authorships": 3, "country": "asirn", "name": "Iran"},
+   {"Co-authorships": 3, "country": "afmar", "name": "Morocco"},
+   {"Co-authorships": 2, "country": "afdza", "name": "Algeria"},
+   {"Co-authorships": 2, "country": "afciv", "name": "Cote Ivoire"},
+   {"Co-authorships": 2, "country": "euhun", "name": "Hungary"},
+   {"Co-authorships": 2, "country": "asidn", "name": "Indonesia"},
+   {"Co-authorships": 2, "country": "afken", "name": "Kenya"},
+   {"Co-authorships": 2, "country": "aflby", "name": "Libya"},
+   {"Co-authorships": 2, "country": "asphl", "name": "Philippines"},
+   {"Co-authorships": 2, "country": "aslka", "name": "Sri lanka"},
+   {"Co-authorships": 2, "country": "sasur", "name": "Surinam"},
+   {"Co-authorships": 2, "country": "saury", "name": "Uruguay"},
+   {"Co-authorships": 1, "country": "afcmr", "name": "Cameroon "},
+   {"Co-authorships": 1, "country": "euhrv", "name": "Croatia"},
+   {"Co-authorships": 1, "country": "nagtm", "name": "Guatemala"},
+   {"Co-authorships": 1, "country": "afgin", "name": "Guinea"},
+   {"Co-authorships": 1, "country": "nahnd", "name": "Honduras "},
+   {"Co-authorships": 1, "country": "aslbn", "name": "Lebanon"},
+   {"Co-authorships": 1, "country": "afmrt", "name": "Mauritania"},
+   {"Co-authorships": 1, "country": "asnpl", "name": "Nepal"},
+   {"Co-authorships": 1, "country": "nanic", "name": "Nicaragua"},
+   {"Co-authorships": 1, "country": "asomn", "name": "Oman"},
+   {"Co-authorships": 1, "country": "eupol", "name": "Poland"},
+   {"Co-authorships": 1, "country": "eusrb", "name": "Serbia"},
+   {"Co-authorships": 1, "country": "afsle", "name": "Sierra Leone"},
+   {"Co-authorships": 1, "country": "euukr", "name": "Ukraine"}
+  ]
+
+  // instantiate d3plus
+  var visualization = d3plus.viz()
+    .container("#viz")        // container DIV to hold the visualization
+    .data(sample_data)        // data to use with the visualization
+    .coords("http://d3plus.org/topojson/countries.json") // pass topojson coordinates
+    .type("geo_map")          // visualization type
+    .id("country")            // key for which our data is unique on
+    .text("name")             // key to use for display text
+    .color("Co-authorships")           // key for coloring countries
+    .tooltip("Co-authorships")         // keys to place in tooltip
+    .draw()                   // finally, draw the visualization!
+</script>

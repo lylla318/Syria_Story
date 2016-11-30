@@ -1,0 +1,18 @@
+11.16.2016uu
+
+- color scheme fix
+- crop out antarctica
+- filter out the year (add slider)
+- on focus in - only half page for map
+- be able to display all articles
+- want to see author affiliation - co-authorships from x, y, z - this many counts, etc
+- articles from this many universities - this many counts
+
+
+UNI X - 3 articles
+UNI Y - 2 artciels 
+
+- simple histogram? 
+
+
+right now we only have co-authorship data - in the future we may have some other kinds of data... so there may be different types of counts. if someone wants to see complete list of the articles. 

@@ -7,7 +7,6 @@ noCoauthors.sort(function(a, b){return a-b});
 
 /* 
 var noCoauthors = [];
-
 for (var i=0 ; i < (Object.keys(sample_data)).length ; i++) {
   noCoauthors.push( sample_data[(Object.keys(sample_data))[i]].coauthors);
 }
@@ -16,6 +15,23 @@ for (var i=0 ; i < (Object.keys(sample_data)).length ; i++) {
 function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
+
+$(function(){
+
+  $('#slide-submenu').on('click',function() {             
+        $(this).closest('.list-group').fadeOut('slide',function(){
+          $('.mini-submenu').fadeIn();  
+        });
+        
+      });
+
+  $('.mini-submenu').on('click',function(){   
+        $(this).next('.list-group').toggle('slide');
+        $('.mini-submenu').hide();
+  })
+})
+
+
 
 d3.select(window).on("resize", throttle);
 
@@ -31,6 +47,8 @@ var topo,projection,path,svg,g,centered;
 var tooltip = d3.select("#container").append("div").attr("class", "tooltip hidden");
 
 var clicked = false;
+
+var minimized = false;
 
 setup(width,height,false);
 
@@ -116,7 +134,7 @@ function draw(topo) {
   //tooltips
   country
     .on("mousemove", function(d,i) {
-      d3.select(this).style("fill", "#66C2FF");
+      d3.select(this).style("fill", /*"#66C2FF"*/"#9999cc");
       var mouse = d3.mouse(svg.node()).map( function(d) { return parseInt(d); } );
         tooltip
           .classed("hidden", false)
@@ -138,15 +156,18 @@ function draw(topo) {
       }); 
 
   function clicked(d) {
-    d3.selectAll(".clicked").classed("clicked", false);
-    if(d3.select(this).classed("clicked", true));
-    d3.select(this).style("fill", "#66C2FF"); /* Fix later */
-    
-    d3.select("svg").remove();
-    setup(width,height,true);
-    $("#container").css("width", "50%")
+    if(!minimized) {
+      minimized = true;
+      d3.selectAll(".clicked").classed("clicked", false);
+      if(d3.select(this).classed("clicked", true));
+      d3.select(this).style("fill", /*"#66C2FF"*/"#9999CC"); /* Fix later */
+      d3.select("svg").remove();
+      setup(width,height,true);
+      $("#container").css("width", "50%")
+    } else {
+      console.log("meh");
+    }
   }
-
 }
 
 

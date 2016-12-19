@@ -16,22 +16,16 @@ function hasClass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
 
-$(function(){
-
-  $('#slide-submenu').on('click',function() {             
-        $(this).closest('.list-group').fadeOut('slide',function(){
-          $('.mini-submenu').fadeIn();  
-        });
-        
-      });
-
-  $('.mini-submenu').on('click',function(){   
-        $(this).next('.list-group').toggle('slide');
-        $('.mini-submenu').hide();
-  })
-})
-
-
+$(".button").on("click",function() {
+  if(minimized) {
+    minimized = false;
+    d3.select(this).style("fill", /*"#66C2FF"*/"#9999CC"); /* Fix later */
+    d3.select("svg").remove();
+    setup(width,height,false);
+    $("#container").css("width", "76%")
+    $("#container").css("height", "76%")
+  }
+});
 
 d3.select(window).on("resize", throttle);
 
@@ -50,9 +44,9 @@ var clicked = false;
 
 var minimized = false;
 
-setup(width,height,false);
+setup(width,height,false, null);
 
-function setup(width,height,clicked){
+function setup(width,height,clicked,selected){
   if(!clicked) {
     projection = d3.geo.mercator()
     .translate([0, 50])
@@ -86,11 +80,16 @@ function setup(width,height,clicked){
   g = svg.append("g");
   d3.json("data/world-topo.json", function(error, world) {
     var countries = topojson.feature(world, world.objects.countries).features;
-
     topo = countries;
-    draw(topo);
+    if(clicked) {
+      draw(topo, true);
+    } else {
+      draw(topo, false);
+    }
+    
 
   });
+  d3.select(selected).classed("clicked",true);
 }
 
 
@@ -103,18 +102,26 @@ function getCoauthors(name) {
   }
 }
 
-function draw(topo) {
+function draw(topo, showPanel) {
 
   var country = g.selectAll(".country").data(topo);
 
   /* var colors = ['#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#253494','#081d58']; */
 
-  colors = ['#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026'];
+  if(showPanel) { 
+    $("#panel").show(); 
+    $("#button").show();
+  } else {
+    $("#panel").hide();
+    $("#button").hide();
+  }
+
+  colors = ['#fed976','#ffcc33','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026'];
 
   country.enter().insert("path")
       .attr("class", "country")
       .attr("d", path)
-      .attr("id", function(d,i) { return d.id; })
+      .attr("id", function(d,i) { return d.properties.name; })
       .attr("title", function(d,i) { return d.properties.name; })
       .style("fill", function(d, i) { 
         if(sample_data[d.properties.name]) {
@@ -162,23 +169,16 @@ function draw(topo) {
       if(d3.select(this).classed("clicked", true));
       d3.select(this).style("fill", /*"#66C2FF"*/"#9999CC"); /* Fix later */
       d3.select("svg").remove();
-      setup(width,height,true);
-      $("#container").css("width", "50%")
+      setup(width,height,true, this);
+      $("#container").css("width", "50%");
+      $("#panel").show();
     } else {
-      console.log("meh");
+      d3.selectAll(".clicked").classed("clicked", false);
+      d3.select(this).classed("clicked", true);
     }
   }
 }
 
-
-
-function redraw() {
-  width = document.getElementById('container').offsetWidth-60;
-  height = width / 2;
-  d3.select('svg').remove();
-  setup(width,height);
-  draw(topo);
-}
 
 function move() {
 
@@ -196,6 +196,7 @@ function move() {
 
 function getFill(num, arr, colors) {
   var range = (arr[arr.length-1] / colors.length);
+  if(num == 0) {return "#FFEC8B"; }
   if(num >= 0 && num <= range) { return colors[0]; }
   for (var i = 1 ; i < (parseInt(range) + 1) ; i++) {
     if (num >= (range * i) && num <= (range * (i + 1))) { return colors[i]; }

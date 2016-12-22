@@ -58,17 +58,57 @@ div.tooltip {
 .mini-submenu .icon-bar {
   background-color: #000;
 }
-
-#panel {
-  width: 300px;
-  height: 500px;
-  background: #ddd;
-  margin-top: -500px;
-  float: right;
-}
-
 .header {
   margin-left: 10%;
   margin-top: 5%;
 }
+#country-selected {
+  margin-left: 10%;
+  margin-top: 2%;
+  padding: 0;
+  margin-bottom:0;
+}
+#panel {
+  width: 300px;
+  height: 500px;
+  background: #222;
+  margin-top: -500px;
+  float: right;
+  overflow: scroll;
+  padding: 10px;
+  color: #ddd;
+}
+/*#panel .closed {
+  width: 50px;
+  height: 500px;
+  background: #222;
+  margin-top: -500px;
+  float: right;
+  overflow: scroll;
+  padding: 10px;
+  color: #ddd;
+}*/
+#panel-header {
+  padding: 5px;
+  background: #222;
+  color: #ddd;
+}
+#article-info {
+  padding: 5px;
+  background: #222;
+  color: #ddd;
+}
+#article-info:hover{
+  background: #787878;
+}
+#article-info a {
+  font-style: italic;
+  color: white;
+}
+.toggle-icon{
+  float:right;
+  padding-right:10px;
+  cursor:pointer;
+}
+
 

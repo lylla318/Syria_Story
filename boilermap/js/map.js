@@ -23,8 +23,6 @@ $(document).ready(function(){
       d3.select(this).style("fill", "#9999CC"); //"#66C2FF"
       d3.select("svg").remove();
       setup(width,height,false, null, null);
-      $("#container").css("width", "76%")
-      $("#container").css("height", "76%")
     }
   });
 
@@ -36,16 +34,15 @@ $(document).ready(function(){
           if(!($("#panel").hasClass("closed"))){
             $("#panel").empty();
             $("#panel").append("<div id='panel-header'>" + "<h4><i class='fa fa-bars toggle-icon'></i></h4><br>" + "</div>");
-            $("#panel").css({"width": "50px"});
+            $("#panel").animate({"width": "50px"},500);
             $("#panel").addClass("closed");
           }
           /* Enlarge the panel */
           else {
-            //console.log(current);
             d3.json("data/external-2016-11-4.json", function(error, results) {
               getAuthorData(results, current);
             });
-            $("#panel").css({"width": "300px"});
+            $("#panel").animate({"width": "250px"},500);
             $("#panel").removeClass("closed");
           }
       });
@@ -61,8 +58,8 @@ var zoom = d3.behavior.zoom()
     .scaleExtent([1, 8])
     .on("zoom", move);
 
-var width = document.getElementById('container').offsetWidth-60,
-    height = width / 2;
+var width = document.getElementById('container').offsetWidth,
+    height = (width / 2) - (width / 9);
 
 var topo,projection,path,svg,g,centered;
 
@@ -76,38 +73,21 @@ setup(width,height,false, null, null);
 
 function setup(width,height,clicked,selected,name){
   /* Setup the full map */
-  if(!clicked) {
-    projection = d3.geo.mercator()
-    .translate([0, 50])
-    .scale(width / 2.2 / Math.PI);
+  projection = d3.geo.mercator()
+  .translate([-200, 50])
+  .scale(width / 2.4 / Math.PI);
 
-    path = d3.geo.path()
-        .projection(projection);
-
-    svg = d3.select("#container").append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .append("g")
-        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-        //.call(zoom);
-  } else {
-  /* Setup the minimized map  */  
-    projection = d3.geo.mercator()
-    .translate([-100, -30])
-    .scale(width / 4.2 / Math.PI);
-
-    path = d3.geo.path()
+  path = d3.geo.path()
       .projection(projection);
 
-    svg = d3.select("#container").append("svg")
-        .attr("width", width/1.5)
-        .attr("height", height/1.5)
-        .append("g")
-        .attr("transform", "translate(" + width / 2.5 + "," + height / 2 + ")");
-        //.call(zoom);
-  } 
-  d3.select("svg").style("background", "#cde7f0");
+  svg = d3.select("#container").append("svg")
+      .attr("width", width-(width/4))
+      .attr("height", height+100)
+      .append("g")
+      .attr("transform", "translate(" + width / 2 + "," + height / 1.6 + ")");
+        
   g = svg.append("g");
+
   d3.json("data/world-topo.json", function(error, world) {
     var countries = topojson.feature(world, world.objects.countries).features;
     topo = countries;
@@ -117,9 +97,11 @@ function setup(width,height,clicked,selected,name){
       draw(topo, false, null);
     }
   });
+
   if(selected) {
     d3.select(selected).classed("clicked",true);
   }
+
 }
 
 
@@ -142,7 +124,7 @@ function draw(topo, showPanel, name) {
   } else {
     $("#panel").hide();
     $("#button").hide();
-    $("#country-selected").hide();
+    //$("#country-selected").hide();
   }
 
   colors = ['#fed976','#ffcc33','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026'];
@@ -166,20 +148,15 @@ function draw(topo, showPanel, name) {
       .style("stroke", "white")
       .on("click", clicked);
 
-  //ofsets plus width/height of transform, plsu 20 px of padding, plus 20 extra for tooltip offset off mouse
   var offsetL = document.getElementById('container').offsetLeft+(width/2)+40;
   var offsetT = document.getElementById('container').offsetTop+(height/2)+20;
 
   if(name) {
     d3.select("#" + name).classed("clicked", true);
-    $("#country-selected").html("<h4>Country Selected: <span style='color:orange'>"+name+"</span></h4>");
-    $("#country-selected").show();
   }
 
-  //tooltips
   country
     .on("mousemove", function(d,i) {
-      //console.log($(".clicked"));
       d3.select(this).style("fill", "#66C2FF"); //"#9999cc"
       var mouse = d3.mouse(svg.node()).map( function(d) { return parseInt(d); } );
       tooltip
@@ -202,85 +179,77 @@ function draw(topo, showPanel, name) {
     }); 
 
   function clicked(d) {
-    if(minimized) {
-      d3.selectAll(".clicked").classed("clicked", false);
-      /*d3.select("#" + name).style("fill", function() {
-        console.log("fucc");
-        if(sample_data[name]) {
-          var numCoauthors = (sample_data[name]).coauthors;
-          return getFill(numCoauthors, noCoauthors,colors);
-        } else {
-          return getFill(0, noCoauthors,colors);
-        }
-      });*/
-      d3.select(this).classed("clicked", true);
-      $("#country-selected").html("<h4>Country Selected: <span style='color:orange'>"+d.properties.name+"</span></h4>");
-      $("#country-selected").show();
-      d3.json("data/external-2016-11-4.json", function(error, results) {
-        getAuthorData(results, d.properties.name);
-      });
-    } else {
-      minimized = true;
-      d3.selectAll(".clicked").classed("clicked", false);
-      if(d3.select(this).classed("clicked", true));
-      d3.select(this).style("fill", "#9999CC"); 
-      d3.select("svg").remove();
-      setup(width,height,true, this, d.properties.name);
-      $("#container").css("width", "50%");
-      $("#panel").show();
-
-      d3.json("data/external-2016-11-4.json", function(error, results) {
-        getAuthorData(results, d.properties.name);
-      });
-
-    }
+    d3.selectAll(".clicked").classed("clicked", false);
+    d3.select(this).classed("clicked", true);
+    current = d.properties.name;
+    d3.json("data/external-2016-11-4.json", function(error, results) {
+      getAuthorData(results, d.properties.name);
+    });
+    $("#panel").show();
   }
+
+  $("#container").css({"width":"70%"});
+
 }
 
+/* Total Count, top 3 external orgs, top 3 cornell authors, last co-authorship year */
 function getAuthorData(results,ctry) {
   $("#panel").empty();
-  $("#panel").css({"width":"300px"})
-  $("#panel").append("<div id='panel-header'>" + "<h4>Co-authorships<i class='fa fa-bars toggle-icon'></i></h4><br>" + "</div>");
+  $("#panel").css({"width":"250px"})
+  $("#panel").append("<div id='panel-header'>" + "<h4> <span style='color:orange' id='country-selected'>" + current + "</span> <i class='fa fa-bars toggle-icon'></i></h4><br>" + "</div>");
   var authors,
   count = 0,
-  affiliations = {};
+  latestPublicationYear = 0,
+  authorCount = {};
+  institutionCount = {};
   current = ctry;
 
   for(var i=0 ; i<results.length ; i++) {
-    var affiliated = false;
     authors = (results[i]).authors;
+    var affiliated = false;
     for(var j=0 ; j<authors.length ; j++) {
       if(authors[j].country && (authors[j].country).toLowerCase() == ctry.toLowerCase()) {
         affiliated = true;
         count++;
+        if(contains((authors[j]).authorName, Object.keys(authorCount))) {
+          authorCount[(authors[j]).authorName] += 1; 
+        } else {
+          authorCount[(authors[j]).authorName] = 1; 
+        }
+        var parsedInstitution = getInstitution(authors[j].authorAffiliation)
+        if(institutionCount[parsedInstitution]) {
+          institutionCount[parsedInstitution] = institutionCount[parsedInstitution] + 1; 
+        } else {
+          institutionCount[parsedInstitution] = 1; 
+        }
       }
     }
-    if(affiliated){
-      $("#panel").append("<div id='article-info'>"
-          + "<a href='"+ (results[i]).scholarURI +"'>" + (results[i]).articleTitle + "</a><br>"
-          + (results[i]).yearOfPublication
-          + "</div>");
+    
+    if(affiliated) {
+      if(parseInt((results[i]).yearOfPublication) > latestPublicationYear) {
+        latestPublicationYear = parseInt((results[i]).yearOfPublication);
+      }
     }
+  }
+  if(count > 0){
+    $("#panel").append("<div id='article-info'>"
+      + "<h8>COAUTHORSHIPS<br><br></h8><ul><li>Total: " + getCoauthors(ctry) + "</li></ul>"
+      + "</div>"
+      + "<div id='article-info'>"
+      + "<h8>Top 3 External Organizations<br><br></h8><ul><li>" + (Object.keys(institutionCount))[0] + ": " + institutionCount[(Object.keys(institutionCount))[0]] + "</li><li>" + (Object.keys(institutionCount))[1] + ": " + institutionCount[(Object.keys(institutionCount))[1]] + "</li><li>" + (Object.keys(institutionCount))[2] + ": " + institutionCount[(Object.keys(institutionCount))[2]] + "</li></ul>"
+      + "</div>"
+      + "<div id='article-info'>"
+      + "<h8>Top 3 Cornell Authors<br><br></h8><ul><li>" + (Object.keys(authorCount))[0] + "</li><li>" + (Object.keys(authorCount))[1] + "</li><li>" + (Object.keys(authorCount))[2] + "</li></ul>"
+      + "</div>"
+      + "<div id='article-info'>"
+      + "<h8>Last Co-authorship Year:   " + latestPublicationYear + " </h8>"
+      + "</div>");
   }
   if(count == 0) {
     $("#panel").append("<div id='panel-header'>"
           + "There are no affiliations with the selected country.</div>");
   }
-  /*$("#panel-header").click(function(e){
-      e.preventDefault();
-      // If panel is open, minimize it. 
-      if(!($("#panel").hasClass("closed"))){
-        console.log("heree");
-        $("#panel").empty();
-        $("#panel").append("<div id='panel-header'>" + "<h4><i class='fa fa-bars toggle-icon'></i></h4><br>" + "</div>");
-        $("#panel").css({"width": "50px"});
-        $("#panel").addClass("closed");
-      }
-      // Enlarge the panel 
-      else {
-        console.log(ctry);
-      }
-  });*/
+
 }
 
 function move() {
@@ -306,6 +275,14 @@ function getFill(num, arr, colors) {
   }
 }
 
+/* "Sejong Univ, Dept Chem, Seoul 143747, South Korea;", */
+function getInstitution(str) {
+  var arr = str.split(',', 1);
+  arr = (arr[0]).split(' ');
+  //console.log(arr);
+  return arr[0] + " " + arr[1];
+}
+
 function redraw() {
   width = document.getElementById('container').offsetWidth-60;
   height = width / 2;
@@ -321,6 +298,16 @@ function throttle() {
     throttleTimer = window.setTimeout(function() {
       //redraw();
     }, 200);
+}
+
+function contains(a, obj) {
+    var i = a.length;
+    while (i--) {
+       if (a[i] === obj) {
+           return true;
+       }
+    }
+    return false;
 }
 
 /* 

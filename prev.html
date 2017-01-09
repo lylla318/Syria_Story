@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<body>
+
+
+<div id="overlay">
+    <div id="title">
+    	<h1>_Syrian Spring</h1>
+    	<h3> A visual story.</h3>
+    </div>
+
+    <video class="visible-desktop" id="main-vid" poster="media/attacks_vid01.jpg" autoplay loop muted>
+        <source type="video/webm" src="media/attacks_vid01.webm"></source>
+    </video>
+</div>
+
+<div id="body-content">
+    <div id="viz"></div>    
+      <div id="text-info" class="text-info">
+        	<div class="date"></div><br>
+	         <div id="attack-info">
+	            <div><strong>Aleppo:</strong> <span id="aleppo">0</span></div>
+	            <div><strong>Homs:</strong> <span id="homs">0</span></div>
+	            <div><strong>Idlib:</strong> <span id="idlib">0</span></div>
+	            <div><strong>Hama:</strong> <span id="hama">0</span></div>
+	            <div><strong>Damascus:</strong> <span id="damascus">0</span></div>
+	            <div><strong>Daraa:</strong> <span id="daraa">0</span></div>
+	            <div><strong>Lattakia:</strong> <span id="lattakia">0</span></div>
+	            <div><strong>Deir Ezzor:</strong> <span id="deir">0</span></div>
+	            <div><br><strong>TOTAL:</strong> <span id="total">0</span></div>
+	        </div>
+      </div>
+
+      <div id="viz2"></div>    
+
+      <div id="lineGraph" width="960" height="500"></div>
+</div>
+
+
+<link rel="stylesheet" href="styles/bootstrap.min.css">
+<link href="styles/style.css" rel="stylesheet">
+<link href="styles/font-awesome.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Space+Mono" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>  
+<script src="javascript/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>-->
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="//d3js.org/topojson.v1.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="javascript/main.js"></script>
+
+</body>
+
+</html>
